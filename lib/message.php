@@ -2,79 +2,45 @@
 class Message {
 
     public static function messenger() {
+        //User ID from session
+        $user_id = $_SESSION['user_id'];
+
         //Tabs
-        $message_sql = db_query("SELECT * FROM message WHERE user_id = ".$_SESSION['user_id']."");
+        $message_sql = db_query("SELECT * FROM message WHERE user_id = ".$user_id."");
         echo '<ul id="tabs" class="nav nav-tabs" data-tabs="tabs">';
+        $message_id = array();
+        $i = 1;
         foreach($message_sql as $message) {
             $user_sql = db_select_row("SELECT * FROM user WHERE id = ".$message['recipient_id']);
-            echo '<li class="active"><a href="#message'.$message['id'].'" data-toggle="tab">'.$user_sql['username'].'</a></li>';
+            $item_class = ($i == 1) ? 'active' : '';
+            echo '<li class="'.$item_class.'"><a href="#message'.$message['id'].'" data-toggle="tab">'.$user_sql['username'].'</a></li>';
+            $message_id[] = $message['id'];
+            $i++;
         }
         echo '</ul>';
 
-        //Tab content
         echo '<div id="my-tab-content" class="tab-content">';
-        foreach($message_sql as $message) {
-            echo '<div id="chat_body">';
-
-            echo '<div class="tab-pane active" id="#message'.$message['id'].'">';
-            $user_sql = db_select_row("SELECT * FROM user WHERE id = ".$message['user_id']);
-            echo '<div class="post_body">';
-            $date_create = date_create($message['posted_time']);
-            $date = date_format($date_create, 'm-d-Y g:i A');
-            echo '<span class="post_posted_time">'.$date.'</span> ';
-            echo '<span class="post_username">['.$user_sql['username'].']</span>';
-            echo ': ';
-            echo '<span class="post_text">'.$message['message'].'</span>';
+        $i = 1;
+        foreach($message_id as $message) {
+            //Tab content
+            $messages_sql = db_query("SELECT * FROM messages WHERE user_id = ".$user_id." AND message_id = ".$message."");
+            $item_class = ($i == 1) ? 'tab-pane active' : 'tab-pane';
+            echo '<div class="'.$item_class.'" id="message'.$message.'">';
+            foreach($messages_sql as $messages) {
+                $user_sql = db_select_row("SELECT * FROM user WHERE id = ".$messages['user_id']."");
+                $date_create = date_create($messages['posted_time']);
+                $date = date_format($date_create, 'm-d-Y g:i A');
+                echo '<div class="post_body">';
+                echo '<span class="post_posted_time">'.$date.'</span> ';
+                echo '<span class="post_username">['.$user_sql['username'].']</span>';
+                echo ': ';
+                echo '<span class="post_text">'.$messages['message'].'</span>';
+                echo '</div>';
+            }
             echo '</div>';
-
-            echo '<div id="chat_post">
-    <form method="post" accept-charset="utf-8" action="'.BASE_URL.'/messenger">
-    <input type="hidden" id="message_id" name="message_id" value="'.$message['id'].'">
-        <div class="row">
-            <div class="col-md-11"><input type="text" id="chat_input" name="chat_input" class="form-control" placeholder="Hello World..." required></div>
-            <div class="col-md-1"><button type="submit" id="submit" name="submit" class="btn btn-primary">Submit</button></div>
-        </div>
-    </form>
-</div>';
-            echo '</div>';
-
-            echo '</div>';
+            $i++;
         }
         echo '</div>';
-
-        //Working tabs example
-        /*
-        echo '<ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
-        <li class="active"><a href="#red" data-toggle="tab">Red</a></li>
-        <li><a href="#orange" data-toggle="tab">Orange</a></li>
-        <li><a href="#yellow" data-toggle="tab">Yellow</a></li>
-        <li><a href="#green" data-toggle="tab">Green</a></li>
-        <li><a href="#blue" data-toggle="tab">Blue</a></li>
-    </ul>
-    <div id="my-tab-content" class="tab-content">
-        <div class="tab-pane active" id="red">
-            <h1>Red</h1>
-            <p>red red red red red red</p>
-        </div>
-        <div class="tab-pane" id="orange">
-            <h1>Orange</h1>
-            <p>orange orange orange orange orange</p>
-        </div>
-        <div class="tab-pane" id="yellow">
-            <h1>Yellow</h1>
-            <p>yellow yellow yellow yellow yellow</p>
-        </div>
-        <div class="tab-pane" id="green">
-            <h1>Green</h1>
-            <p>green green green green green</p>
-        </div>
-        <div class="tab-pane" id="blue">
-            <h1>Blue</h1>
-            <p>blue blue blue blue blue</p>
-        </div>
-    </div>
-</div>';
-        */
     }
 
     public static function message_save($id, $user_id, $recipient_id, $message) {

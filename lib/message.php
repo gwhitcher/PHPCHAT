@@ -19,6 +19,7 @@ class Message {
         }
         echo '</ul>';
 
+        echo '<div id="chat_body">';
         echo '<div id="my-tab-content" class="tab-content">';
         $i = 1;
         foreach($message_id as $message) {
@@ -40,6 +41,7 @@ class Message {
             echo '</div>';
             $i++;
         }
+        echo '</div>';
         echo '</div>';
     }
 

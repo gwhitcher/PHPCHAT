@@ -6,6 +6,13 @@ $(document).ready(
         }, 3000); //3 seconds
     });
 
+$(document).ready(
+    function() {
+        setInterval(function() {
+            $('#chat_body').load('messenger.php' + ' #chat_body');
+        }, 3000); //3 seconds
+    });
+
 //Flash message disappear
 jQuery(document).ready(function($){
     if('.fadeout-message'){

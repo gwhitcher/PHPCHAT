@@ -11,37 +11,50 @@ if(strpos($routing_uri,'/install') !== FALSE) {
 }
 
 //Login
-if(strpos($routing_uri,'/login') !== FALSE) {
+elseif(strpos($routing_uri,'/login') !== FALSE) {
     $page_name = "login.php";
     return $page_name;
 }
 
 //Logout
-if(strpos($routing_uri,'/logout') !== FALSE) {
+elseif(strpos($routing_uri,'/logout') !== FALSE) {
     $page_name = "logout.php";
     return $page_name;
 }
 
 //Register
-if(strpos($routing_uri,'/register') !== FALSE) {
+elseif(strpos($routing_uri,'/register') !== FALSE) {
     $page_name = "register.php";
     return $page_name;
 }
 
 //Profile
-if(strpos($routing_uri,'/profile') !== FALSE) {
+elseif(strpos($routing_uri,'/profile') !== FALSE) {
     $page_name = "profile.php";
     return $page_name;
 }
 
-//Profile
-if(strpos($routing_uri,'/messenger') !== FALSE) {
+//Messenger
+elseif(strpos($routing_uri,'/messenger') !== FALSE) {
     $page_name = "messenger.php";
     return $page_name;
 }
 
+//Delete message
+elseif(strpos($routing_uri,'/message/delete') !== FALSE) {
+    $page_name = "message_delete.php";
+    return $page_name;
+}
+
+//New Message
+elseif(strpos($routing_uri,'/message') !== FALSE) {
+    $page_name = "message_new.php";
+    return $page_name;
+}
+
+
 //Index
-if(strpos($routing_uri,'/') !== FALSE) {
+elseif(strpos($routing_uri,'/') !== FALSE) {
     $page_name = "home.php";
     return $page_name;
 }

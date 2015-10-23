@@ -30,3 +30,15 @@
 #chat_post {
     margin: 10px;
 }
+
+/* MESSENGER BODY */
+#messenger_body {
+    margin: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #66afe9;
+    outline: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+    border-radius: 5px;
+}

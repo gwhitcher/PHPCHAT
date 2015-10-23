@@ -46,6 +46,24 @@ role INT(11)
 )";
         db_query($sql);
 
+        //Create message table
+        $sql = "CREATE TABLE message (
+id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+user_id INT(11),
+recipient_id INT(11)
+)";
+        db_query($sql);
+
+        //Create messages table
+        $sql = "CREATE TABLE messages (
+id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+message_id INT(11),
+user_id INT(11),
+message TEXT,
+posted_time DATETIME
+)";
+        db_query($sql);
+
         //Insert new user into database.
         $user = new User();
         $username = 'Administrator'; //User login

@@ -4,9 +4,17 @@ $category_id = explode("/", $routing_uri);
 $username = mysqli_real_escape_string(db_connect(), $category_id[3]);
 $user_lookup = new User();
 $user = $user_lookup->user_load_username($username);
-?>
-<h2><?php echo $user['username']; ?></h2>
-<?php
+
+echo '<h2>'.$user['username'].'</h2>';
+
+$message_sql = db_select("SELECT * FROM message WHERE user_id = ".$_SESSION['user_id']." recipient_id = ".$user['id']."");
+if(empty($message_sql)) {
+    echo '<a class="btn btn-success" href="'.BASE_URL.'/message/'.$user['id'].'">Send Message</a>';
+} else {
+    echo '<a class="btn btn-warning" href="#">View Existing Message</a>';
+}
+echo '<br /><br />';
+
 $sql = db_query("SELECT * FROM log WHERE user_id = '".$user['id']."' ORDER BY id DESC");
 
 echo '<table class="table table-bordered">';

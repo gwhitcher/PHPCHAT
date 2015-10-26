@@ -15,6 +15,8 @@ class User {
             $_SESSION["username"] = $login['username'];
             $_SESSION["email"] = $login['email'];
             $_SESSION["role"] = $login['role'];
+            //Update IP on login
+            db_query("UPDATE ".MYSQL_DB.".user SET ip_address = '".$_SERVER['REMOTE_ADDR']."' WHERE user.id = ".$login['id'].";");
             $flash = new Flash();
             $flash->flash('flash_message', 'Logged in!');
             header("Location: ".BASE_URL);
@@ -35,12 +37,62 @@ class User {
 
     public static function prtctd() {
         $routing_uri = $_SERVER['REQUEST_URI'];
-        if($_SESSION['role'] != 1) {
+        if(empty($_SESSION['user_id'])) {
             $flash = new Flash();
             $flash->flash('flash_message', 'You are not authorized to view this page!', 'danger');
             header("Location: ".BASE_URL."/login");
         } elseif(strpos($routing_uri,'/login') !== FALSE) {
             //Keeps login page free from protection.
+        }
+    }
+
+    public static function ban($id) {
+        if($_SESSION['role'] == 1) {
+            $user = db_select_row("SELECT * FROM user WHERE id = '".$id."'");
+            db_query("INSERT INTO ban (ip_address, user_id) VALUES ('".$user['ip_address']."', '".$user['id']."');");
+            $flash = new Flash();
+            $flash->flash('flash_message', 'User '.$user['username'].' successfully banned!');
+            header("Location: ".BASE_URL);
+        } else {
+            $flash = new Flash();
+            $flash->flash('flash_message', 'You are not authorized to view this page!', 'danger');
+            header("Location: ".BASE_URL);
+        }
+    }
+
+    public static function ban_check() {
+        $banned_users = db_query("SELECT * FROM ban");
+        $ip_addresses = array();
+        $user_ids = array();
+        foreach($banned_users as $banned_user) {
+            $ip_addresses[] = $banned_user['ip_address'];
+            $user_ids[] = $banned_user['user_id'];
+        }
+        if(empty($_SESSION['user_id'])) {
+            $_SESSION['user_id'] = array();
+        }
+        if (in_array($_SERVER['REMOTE_ADDR'], $ip_addresses) OR in_array($_SESSION['user_id'], $user_ids)) {
+            header("location:http://www.google.com/");
+            exit();
+        }
+    }
+
+    public static function role_change($user_id, $role_id) {
+        if($_SESSION['role'] == 1) {
+            if($role_id == 1) {
+                $role = 'Admin';
+            } else {
+                $role = 'User';
+            }
+            $user = db_select_row("SELECT * FROM user WHERE id = '".$user_id."'");
+            db_query("UPDATE ".MYSQL_DB.".user SET role = '".$role_id."' WHERE user.id = ".$user['id'].";");
+            $flash = new Flash();
+            $flash->flash('flash_message', 'User '.$user['username'].' successfully changed to '.$role.'!');
+            header("Location: ".BASE_URL);
+        } else {
+            $flash = new Flash();
+            $flash->flash('flash_message', 'You are not authorized to view this page!', 'danger');
+            header("Location: ".BASE_URL);
         }
     }
 
@@ -94,15 +146,15 @@ class User {
         $user = new User();
         $hash_password = $user->encrypt_password($user_password);
 
-
+        $user_ip_address = $_SERVER['REMOTE_ADDR'];
         $user_role = mysqli_real_escape_string(db_connect(), $role);
         if(empty($id)) {
-            db_query("INSERT INTO user (username, email, password, role) VALUES ('".$user_username."', '".$user_email."', '".$hash_password."', '".$user_role."');");
+            db_query("INSERT INTO user (username, email, password, role, ip_address) VALUES ('".$user_username."', '".$user_email."', '".$hash_password."', '".$user_role."', '".$user_ip_address."');");
             $flash = new Flash();
             $flash->flash('flash_message', 'User created!');
             header("Location: ".BASE_URL.'/');
         } else {
-            db_query("UPDATE ".MYSQL_DB.".user SET username = '".$user_username."', password = '".$hash_password."', role = '".$user_role."' WHERE user.id = ".$id.";");
+            db_query("UPDATE ".MYSQL_DB.".user SET username = '".$user_username."', password = '".$hash_password."', role = '".$user_role."', ip_address = '".$user_ip_address."' WHERE user.id = ".$id.";");
             $flash = new Flash();
             $flash->flash('flash_message', 'User updated!');
             header("Location: ".BASE_URL.'/');
@@ -116,6 +168,18 @@ class User {
             header("Location: ".BASE_URL.'/admin/');
         } else {
             db_query("DELETE FROM user WHERE id = ".$id);
+            $chat_sql = db_select("SELECT * FROM log WHERE user_id = ".$id);
+            $message_sql = db_select("SELECT * FROM message WHERE user_id = ".$id);
+            $messages_sql = db_select("SELECT * FROM messages WHERE user_id = ".$id);
+            foreach($chat_sql as $item) {
+                db_query("DELETE FROM log WHERE id = ".$item['id']);
+            }
+            foreach($message_sql as $item) {
+                db_query("DELETE FROM message WHERE id = ".$item['id']);
+            }
+            foreach($messages_sql as $item) {
+                db_query("DELETE FROM messages WHERE id = ".$item['id']);
+            }
             $flash = new Flash();
             $flash->flash('flash_message', 'User deleted!');
             header("Location: ".BASE_URL.'/');

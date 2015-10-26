@@ -42,7 +42,16 @@ id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 username VARCHAR(255),
 email VARCHAR(255),
 password VARCHAR(255),
-role INT(11)
+role INT(11),
+ip_address VARCHAR(255),
+)";
+        db_query($sql);
+
+        //Create ban table
+        $sql = "CREATE TABLE ban (
+id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ip_address VARCHAR(255),
+user_id VARCHAR(255)
 )";
         db_query($sql);
 

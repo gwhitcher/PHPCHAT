@@ -1,3 +1,8 @@
+<?php
+//Login check
+$login_check = new User();
+$login_check->prtctd();
+?>
 <div id="chat_frame">
     <?php
     if(!empty($_POST['submit'])) {

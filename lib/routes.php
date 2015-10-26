@@ -22,9 +22,27 @@ elseif(strpos($routing_uri,'/logout') !== FALSE) {
     return $page_name;
 }
 
+//Ban
+elseif(strpos($routing_uri,'/ban') !== FALSE) {
+    $page_name = "ban.php";
+    return $page_name;
+}
+
+//Role
+elseif(strpos($routing_uri,'/role') !== FALSE) {
+    $page_name = "role.php";
+    return $page_name;
+}
+
 //Register
 elseif(strpos($routing_uri,'/register') !== FALSE) {
     $page_name = "register.php";
+    return $page_name;
+}
+
+//Delete
+elseif(strpos($routing_uri,'/user/delete') !== FALSE) {
+    $page_name = "delete.php";
     return $page_name;
 }
 

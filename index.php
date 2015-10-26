@@ -15,6 +15,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 ob_start();
 session_name('PHPCHAT');
 session_start();
+
 //Includes
 include("lib/config.php");
 include("lib/db.php");
@@ -24,6 +25,11 @@ include("lib/message.php");
 include("lib/routes.php");
 include("lib/flash.php");
 
+//Ban check
+$ban_check = new User();
+$ban_check->ban_check();
+
+//Template
 include("header.php");
 include($page_name);
 include("footer.php");

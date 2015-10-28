@@ -62,6 +62,7 @@ class User {
 
     public static function ban_check() {
         $banned_users = db_query("SELECT * FROM ban");
+        if(empty($banned_users)) { $banned_users = array(); }
         $ip_addresses = array();
         $user_ids = array();
         foreach($banned_users as $banned_user) {

@@ -43,7 +43,7 @@ username VARCHAR(255),
 email VARCHAR(255),
 password VARCHAR(255),
 role INT(11),
-ip_address VARCHAR(255),
+ip_address VARCHAR(255)
 )";
         db_query($sql);
 
